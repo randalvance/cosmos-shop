@@ -5,41 +5,57 @@ trigger:
   paths:
     include:
       - 'backend/*'
-  
-pool:
-  vmImage: 'ubuntu-latest'
-  demands:
-  - npm
 
-steps:
-- task: Npm@1
-  displayName: 'Run npm install'
-  inputs:
-    workingDir: 'backend'
-    verbose: true
+stages:
+- stage: BuildStage
+  displayName: Build
+  jobs:
+  - job: BuildJob
+    pool:
+      vmImage: 'ubuntu-latest'
+      demands:
+      - npm
+    steps:
+    - task: Npm@1
+      displayName: 'Run npm install'
+      inputs:
+        workingDir: 'backend'
+        verbose: true
 
-- task: Npm@1
-  displayName: 'Build App'
-  inputs:
-    command: 'custom'
-    customCommand: 'run build'
-    workingDir: 'backend'
-    verbose: true
+    - task: Npm@1
+      displayName: 'Build App'
+      inputs:
+        command: 'custom'
+        customCommand: 'run build'
+        workingDir: 'backend'
+        verbose: true
 
-- task: PublishBuildArtifacts@1
-  displayName: 'Publish Artifact'
-  inputs:
-    PathtoPublish: '$(Build.SourcesDirectory)/backend/dist'
-    ArtifactName: 'drop'
-    publishLocation: 'Container'
-    
-- task: AzureRmWebAppDeployment@4
-  displayName: 'Deploy to Azure'
-  inputs:
-    ConnectionType: 'AzureRM'
-    azureSubscription: $(AzureSubscription)
-    appType: 'webAppLinux'
-    WebAppName: $(AzureAppServiceName)
-    packageForLinux: '$(Build.SourcesDirectory)/backend/dist'
-    RuntimeStack: 'NODE|12-lts'
-    StartupCommand: 'node server.js'
+    - task: PublishBuildArtifacts@1
+      displayName: 'Publish Artifact'
+      inputs:
+        PathtoPublish: '$(Build.SourcesDirectory)/backend/dist'
+        ArtifactName: 'drop'
+        publishLocation: 'Container'
+
+- stage: DeployStage
+  displayName: Deploy
+  dependsOn: BuildStage
+  jobs:
+    - deployment: DeployJob
+      pool:
+        vmImage: 'ubuntu-latest'
+      environment: 'Production'
+      strategy:
+        runOnce:
+          deploy:
+            steps:
+            - task: AzureRmWebAppDeployment@4
+              displayName: 'Deploy to Azure'
+              inputs:
+                ConnectionType: 'AzureRM'
+                azureSubscription: $(AzureSubscription)
+                appType: 'webAppLinux'
+                WebAppName: $(AzureAppServiceName)
+                packageForLinux: '$(Build.SourcesDirectory)/backend/dist'
+                RuntimeStack: 'NODE|12-lts'
+                StartupCommand: 'node server.js'
