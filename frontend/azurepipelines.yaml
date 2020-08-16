@@ -57,16 +57,16 @@ stages:
           deploy:
             steps:
             - task: ExtractFiles@1
-              displayName: 'Extract Files'
+              displayName: Extract Files
               inputs:
                 archiveFilePatterns: '$(Pipeline.Workspace)/drop/node-cosmos-graphql-ui-$(Build.BuildId).zip'
                 destinationFolder: '$(Pipeline.Workspace)/dist'
                 cleanDestinationFolder: true
-            - task: AzureFileCopy@4
-              displayName: 'Deploy to Azure'
+            - task: AzureCLI@2
+              displayName: Deploy to Azure
               inputs:
-                SourcePath: '$(Pipeline.Workspace)/dist'
                 azureSubscription: $(AzureSubscription)
-                Destination: 'AzureBlob'
-                storage: $(AzureStorageName)
-                ContainerName: '$web'
+                scriptType: ps
+                scriptLocation: inlineScript
+                inlineScript: |
+                  az storage blob upload-batch — account-name $(AzureStorageName) account-key $(AzureStorageKey) — destination ‘$web’ — source '$(Pipeline.Workspace)/dist'
