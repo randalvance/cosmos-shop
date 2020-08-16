@@ -22,7 +22,7 @@ steps:
   displayName: 'Build App'
   inputs:
     command: 'custom'
-    customCommand: 'build'
+    customCommand: 'run build'
     workingDir: 'backend'
     verbose: true
 
