@@ -1,0 +1,40 @@
+# Node.js
+# Build a general Node.js project with npm.
+# Add steps that analyze code, save build artifacts, deploy, and more:
+# https://docs.microsoft.com/azure/devops/pipelines/languages/javascript
+
+trigger:
+- master
+
+pool:
+  vmImage: 'ubuntu-latest'
+  demands:
+  - npm
+
+steps:
+- task: Npm@1
+  displayName: 'Run npm install'
+  inputs:
+    verbose: false
+
+- script: |
+    npm run build
+  displayName: 'Build Project'
+
+- task: PublishBuildArtifacts@1
+  displayName: 'Publish Artifact'
+  inputs:
+    PathtoPublish: '$(Build.SourcesDirectory)/dist'
+    ArtifactName: 'drop'
+    publishLocation: 'Container'
+    
+- task: AzureRmWebAppDeployment@4
+  displayName: 'Deploy to Azure'
+  inputs:
+    ConnectionType: 'AzureRM'
+    azureSubscription: $(AzureSubscription)
+    appType: 'webAppLinux'
+    WebAppName: $(AzureAppServiceName)
+    packageForLinux: '$(Build.SourcesDirectory)/dist'
+    RuntimeStack: 'NODE|12-lts'
+    StartupCommand: 'node server.js'
