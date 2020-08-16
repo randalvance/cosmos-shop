@@ -1,0 +1,26 @@
+{
+    "type": "Microsoft.Blueprint/blueprints",
+    "name": "cosmos-shop-blueprint",
+    "properties": {
+        "displayName": "Cosmos Shop Blueprint",
+        "description": "A Blueprint for Creating the Cosmos Shop Cloud Infrastructure",
+        "targetScope": "subscription",
+        "parameters": {
+            "appServicePlanName": {
+                "type": "string"
+            },
+            "webAppName": {
+                "type": "string"
+            }
+        },
+        "resourceGroups": {
+            "cosmos-shop-rg": {
+                "name": "cosmos-shop-rg",
+                "metadata": {
+                    "displayName": "Cosmos Shop Resource Group",
+                    "description": "Cosmos Shop Resource Group Description"
+                }
+            }
+        }
+    }
+}

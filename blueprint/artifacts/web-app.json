@@ -1,0 +1,46 @@
+{
+    "kind": "template",
+    "type": "Microsoft.Blueprint/blueprints/artifacts",
+    "properties": {
+        "dependsOn": [ "app-plan" ],
+        "displayName": "Cosmos Shop Web App",
+        "resourceGroup": "cosmos-shop-rg",
+        "parameters": {
+            "webAppName": {
+                "value": "[parameters('webAppName')]"
+            },
+            "appServicePlanName": {
+                "value": "[parameters('appServicePlanName')]"
+            }
+        },
+        "template": {
+            "$schema": "https://schema.management.azure.com/schemas/2015-01-01/deploymentTemplate.json#",
+            "contentVersion": "1.0.0.0",
+            "parameters": {
+                "webAppName": {
+                    "type": "string"
+                },
+                "appServicePlanName": {
+                    "type": "string"
+                }
+            },
+            "resources": [
+                {
+                    "apiVersion": "2018-11-01",
+                    "name": "[parameters('webAppName')]",
+                    "type": "Microsoft.Web/sites",
+                    "location": "[resourceGroup().location]",
+                    "properties": {
+                        "name": "[parameters('webAppName')]",
+                        "siteConfig": {
+                            "appSettings": [],
+                            "linuxFxVersion": "NODE|12-lts"
+                        },
+                        "serverFarmId": "[parameters('appServicePlanName')]",
+                        "clientAffinityEnabled": false
+                    }
+                }
+            ]
+        }
+    }
+}
