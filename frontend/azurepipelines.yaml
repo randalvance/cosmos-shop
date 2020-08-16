@@ -69,4 +69,4 @@ stages:
                 scriptType: bash
                 scriptLocation: inlineScript
                 inlineScript: |
-                  az storage blob upload-batch — account-name $(AzureStorageName) account-key $(AzureStorageKey) — destination ‘$web’ — source '$(Pipeline.Workspace)/dist'
+                  az storage blob upload-batch --account-name $(AzureStorageName) --account-key $(AzureStorageKey) --destination ‘$web’ --source '$(Pipeline.Workspace)/dist'
