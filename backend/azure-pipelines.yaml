@@ -5,7 +5,7 @@ trigger:
   paths:
     include:
       - 'backend/*'
-
+  
 pool:
   vmImage: 'ubuntu-latest'
   demands:
@@ -15,11 +15,16 @@ steps:
 - task: Npm@1
   displayName: 'Run npm install'
   inputs:
-    verbose: false
+    workingDir: 'backend'
+    verbose: true
 
-- script: |
-    npm run build
-  displayName: 'Build Project'
+- task: Npm@1
+  displayName: 'Build App'
+  inputs:
+    command: 'custom'
+    customCommand: 'build'
+    workingDir: 'backend'
+    verbose: true
 
 - task: PublishBuildArtifacts@1
   displayName: 'Publish Artifact'
