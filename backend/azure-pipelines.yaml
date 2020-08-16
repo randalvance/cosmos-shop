@@ -29,7 +29,7 @@ steps:
 - task: PublishBuildArtifacts@1
   displayName: 'Publish Artifact'
   inputs:
-    PathtoPublish: '$(Build.SourcesDirectory)/dist'
+    PathtoPublish: '$(Build.SourcesDirectory)/backend/dist'
     ArtifactName: 'drop'
     publishLocation: 'Container'
     
@@ -40,6 +40,6 @@ steps:
     azureSubscription: $(AzureSubscription)
     appType: 'webAppLinux'
     WebAppName: $(AzureAppServiceName)
-    packageForLinux: '$(Build.SourcesDirectory)/dist'
+    packageForLinux: '$(Build.SourcesDirectory)/backend/dist'
     RuntimeStack: 'NODE|12-lts'
     StartupCommand: 'node server.js'
