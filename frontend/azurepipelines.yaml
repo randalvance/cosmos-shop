@@ -1,0 +1,68 @@
+trigger:
+  branches:
+    include:
+      - master
+  paths:
+    include:
+      - 'frontend/*'
+
+stages:
+- stage: BuildStage
+  displayName: Build
+  jobs:
+  - job: BuildJob
+    pool:
+      vmImage: 'ubuntu-latest'
+      demands:
+      - npm
+    steps:
+    - task: Npm@1
+      displayName: 'Run npm install'
+      inputs:
+        workingDir: 'frontend'
+        verbose: true
+
+    - task: Npm@1
+      displayName: 'Build App'
+      inputs:
+        command: 'custom'
+        customCommand: 'run build'
+        workingDir: 'frontend'
+        verbose: true
+
+    - task: ArchiveFiles@2
+      inputs:
+        rootFolderOrFile: '$(Build.SourcesDirectory)/frontend/dist'
+        includeRootFolder: false
+        archiveFile: '$(Build.ArtifactStagingDirectory)/node-cosmos-graphql-ui-$(Build.BuildId).zip'
+
+
+    - task: PublishBuildArtifacts@1
+      displayName: 'Publish Artifact'
+      inputs:
+        PathtoPublish: '$(Build.ArtifactStagingDirectory)/node-cosmos-graphql-ui-$(Build.BuildId).zip'
+        ArtifactName: 'drop'
+        publishLocation: 'Container'
+
+# - stage: DeployStage
+#   displayName: Deploy
+#   dependsOn: BuildStage
+#   jobs:
+#     - deployment: DeployJob
+#       pool:
+#         vmImage: 'ubuntu-latest'
+#       environment: 'Production'
+#       strategy:
+#         runOnce:
+#           deploy:
+#             steps:
+#             - task: AzureRmWebAppDeployment@4
+#               displayName: 'Deploy to Azure'
+#               inputs:
+#                 ConnectionType: 'AzureRM'
+#                 azureSubscription: $(AzureSubscription)
+#                 appType: 'webAppLinux'
+#                 WebAppName: $(AzureAppServiceName)
+#                 packageForLinux: '$(Pipeline.Workspace)/drop/node-cosmos-graphql-$(Build.BuildId).zip'
+#                 RuntimeStack: 'NODE|12-lts'
+#                 StartupCommand: 'node server.js'
