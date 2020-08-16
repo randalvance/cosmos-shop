@@ -49,6 +49,10 @@ stages:
         runOnce:
           deploy:
             steps:
+            - task: DownloadPipelineArtifact@2
+              inputs:
+                source: 'current'
+                path: '$(Pipeline.Workspace)'
             - task: AzureRmWebAppDeployment@4
               displayName: 'Deploy to Azure'
               inputs:
@@ -56,6 +60,6 @@ stages:
                 azureSubscription: $(AzureSubscription)
                 appType: 'webAppLinux'
                 WebAppName: $(AzureAppServiceName)
-                packageForLinux: '$(Build.SourcesDirectory)/backend/dist'
+                packageForLinux: '$(Pipeline.Workspace)/dist'
                 RuntimeStack: 'NODE|12-lts'
                 StartupCommand: 'node server.js'
