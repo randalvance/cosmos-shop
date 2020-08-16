@@ -30,10 +30,17 @@ stages:
         workingDir: 'backend'
         verbose: true
 
+    - task: ArchiveFiles@2
+      inputs:
+        rootFolderOrFile: '$(Build.SourcesDirectory)/backend/dist'
+        includeRootFolder: false
+        archiveFile: '$(Build.ArtifactStagingDirectory)/node-cosmos-graphql-$(Build.BuildId).zip'
+
+
     - task: PublishBuildArtifacts@1
       displayName: 'Publish Artifact'
       inputs:
-        PathtoPublish: '$(Build.SourcesDirectory)/backend/dist'
+        PathtoPublish: '$(Build.ArtifactStagingDirectory)/node-cosmos-graphql-$(Build.BuildId).zip'
         ArtifactName: 'drop'
         publishLocation: 'Container'
 
@@ -60,6 +67,6 @@ stages:
                 azureSubscription: $(AzureSubscription)
                 appType: 'webAppLinux'
                 WebAppName: $(AzureAppServiceName)
-                packageForLinux: '$(Pipeline.Workspace)/dist'
+                packageForLinux: '$(Pipeline.Workspace)/drop/node-cosmos-graphql-$(Build.BuildId).zip'
                 RuntimeStack: 'NODE|12-lts'
                 StartupCommand: 'node server.js'
