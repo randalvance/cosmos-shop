@@ -1,2 +1,2 @@
-# Node CosmosDB GraphQL Vue Example
-Reference Application That Uses Node, Azure CosmosDB, GraphQL, and Vue
+# Cosmos Shop
+Reference Application That Uses Node, Azure CosmosDB, Apollo Server, and Vue
