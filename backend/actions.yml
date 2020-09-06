@@ -1,0 +1,23 @@
+name: Backend
+
+on:
+  push:
+    branches: [ master ]
+    paths:
+      - backend
+  pull_request:
+    branches: [ master ]
+    paths:
+      - backend
+
+jobs:
+  build:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v2
+      - name: Use Node.js v12
+        uses: actions/setup-node@v1
+        with:
+          node-version: 12.x
+      - name: Run a multi-line script
+        run: npm install
